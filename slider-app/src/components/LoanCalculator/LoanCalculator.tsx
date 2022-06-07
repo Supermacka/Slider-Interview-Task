@@ -1,7 +1,10 @@
-import React from "react";
+import React, { useContext } from "react";
 import Sliders from "components/Sliders/Sliders";
+import MonthlyCostContext from "contexts/MonthlyCostContext";
 
 const LoanCalculator: React.FC = () => {
+  const { item } = useContext(MonthlyCostContext);
+
   return (
     <div>
       <header>
@@ -9,7 +12,7 @@ const LoanCalculator: React.FC = () => {
       </header>
       <div>
         <h4>Exempel på månadskostnad</h4>
-        <h3>{"Hi"} 0000 SEK / mån</h3>
+        <h3>{item.monthlyCost} SEK / mån</h3>
       </div>
       <Sliders />
     </div>

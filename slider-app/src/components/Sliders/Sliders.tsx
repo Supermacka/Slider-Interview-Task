@@ -1,5 +1,7 @@
-import React, { ChangeEvent } from "react";
+import React, { FormEvent, ChangeEvent, useEffect, useContext } from "react";
 import useForm from "components/utilities/useForm";
+import { calculateMonthlyCost } from "components/utilities/monthlyCostCalculation";
+import MonthlyCostContext from "contexts/MonthlyCostContext";
 
 interface RangeProps {
   min: number;
@@ -29,11 +31,30 @@ const Sliders: React.FC = () => {
     state: {} | any;
     handleChange: (e: ChangeEvent<HTMLInputElement>) => void;
   } = useForm();
-  const loanAmount: number = +state.loanAmount;
-  const loanDuration: number = +state.loanDuration;
+
+  const loanAmount: number = !isNaN(state.loanAmount)
+    ? +state.loanAmount
+    : +loanAmountPropValues.initial;
+  const loanDuration: number = !isNaN(state.loanDuration)
+    ? +state.loanDuration
+    : +loanDurationtPropValues.initial;
+
+  // Dispatch calculateMonthlyCost to context-API
+  const { handleMonthlyCost } = useContext(MonthlyCostContext);
+
+  useEffect(() => {
+    let monthlyCost = calculateMonthlyCost(loanAmount, loanDuration);
+    handleMonthlyCost(monthlyCost);
+  }, [loanAmount, loanDuration]);
+
+  const handleSubmit = (event: any) => {
+    event.preventDefault();
+    let url = `http://localhost:3000/?loanAmount=${loanAmount}&loanDuration=${loanDuration}`;
+    console.log("URL", url);
+  };
 
   return (
-    <form action="">
+    <form onSubmit={handleSubmit}>
       <label>
         <h4>Lånebelopp</h4>
         <input
@@ -41,11 +62,11 @@ const Sliders: React.FC = () => {
           name="loanAmount"
           min={loanAmountPropValues.min}
           max={loanAmountPropValues.max}
-          step={loanAmountPropValues.initial}
-          value={loanAmount || ""}
+          step={loanAmountPropValues.step}
+          value={loanAmount}
           onChange={handleChange}
         />
-        <output>{loanAmount || ""} kr</output>
+        <output>{loanAmount} kr</output>
         <output>{loanAmountPropValues.max} kr</output>
       </label>
 
@@ -57,14 +78,14 @@ const Sliders: React.FC = () => {
           min={loanDurationtPropValues.min}
           max={loanDurationtPropValues.max}
           step={loanDurationtPropValues.step}
-          value={loanDuration || ""}
+          value={loanDuration}
           onChange={handleChange}
         />
-        <output>{loanDuration || ""} år</output>
+        <output>{loanDuration} år</output>
         <output>{loanDurationtPropValues.max} år</output>
       </label>
 
-      <button>Till ansökan</button>
+      <button type="submit">Till ansökan</button>
     </form>
   );
 };

@@ -6,7 +6,7 @@ const useForm = () => {
   const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
     // Spread current props... set "loandAmount": value
-    setState((current) => ({ ...current, [name]: value }));
+    setState((prev) => ({ ...prev, [name]: value }));
   };
 
   return { state, handleChange };
